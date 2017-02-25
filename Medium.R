@@ -11,11 +11,31 @@ CheckData <- function(Name,N){
     y<-nrow(subset(df,is.na(year)))
     m<-nrow(subset(df,is.na(month)))
     d<-nrow(subset(df,is.na(day)))
-    ym<-nrow(subset(df,is.na(year)&&is.na(month)))
-    yd<-nrow(subset(df,is.na(year)&&is.na(day)))
-    dm<-nrow(subset(df,is.na(day)&&is.na(month)))
-    ymd<-nrow(subset(df,is.na(year)&&is.na(month)&&is.na(day)))
+    new_DF <- df[is.na(df$year),]
+
+    ym<-nrow(subset(new_DF,is.na(month)))
+    yd<-nrow(subset(new_DF,is.na(day)))
+
+    new_DF <- df[is.na(df$month),]
+    dm<-nrow(subset(new_DF,is.na(day)))
+
+    Ndf<- new_DF[is.na(new_DF$day),]
+    ymd<-nrow(subset(Ndf,is.na(year)))
     score<-y+m+d-yd-ym-dm+ymd
+    print("y=")
+    print(y)
+    print("m=")
+    print(m)
+    print("d=")
+    print(d)
+    print("yd=")
+    print(yd)
+    print("ym=")
+    print(ym)
+    print("md=")
+    print(dm)
+    print("ymd=")
+    print(ymd)
     score<-score/N
     tmpX[count]<-score
     count<-count+1
