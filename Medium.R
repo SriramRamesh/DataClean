@@ -2,12 +2,12 @@
 checkdata <- function(Name, N){
   x <- Name
   library("rgbif")
-  tmpx <- matrix(length(x))
+  tmpX <- matrix(length(x))
   count <- 1
   for (i in x){
     key <- name_backbone(name = i, rank = 'species')$usageKey
-    print("i=")
-    print(i)
+    # print("i=")
+    # print(i)
     df <- data.frame( (occ_data(taxonKey = key, limit = N))$data)
     y <- nrow(subset(df, is.na(year)))
     m <- nrow(subset(df, is.na(month)))
@@ -38,10 +38,11 @@ checkdata <- function(Name, N){
     # print("ymd=")
     # print(ymd);
     score <- score / N
-    tmpx[count] <- score
+    tmpX[count] <- score
     count <- count + 1
   }
-  Score <- tmpX
+  Score <- tmpX*100
+  print("Score Denotes the percentage data without date")
   df <- data.frame(Name, Score)
   print(df)
 }
