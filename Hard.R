@@ -33,6 +33,8 @@ getCentroid <- function(countryName,df){
 PlotCountryCenter<-function(speciesList){
   for(species in speciesList){
     GBIFdata <- getData(species,1000)
+    GBIFdata <- subset( GBIFdata, select=c("country","decimalLatitude","decimalLongitude") )
+    GBIFdata <- GBIFdata[complete.cases(GBIFdata),]
     print("successful data")
     CountriesList<-unique(GBIFdata$country)
     print(CountriesList)
@@ -41,29 +43,34 @@ PlotCountryCenter<-function(speciesList){
     for ( c in CountriesList ){
       print(c)
       centroid <- getCentroid(c)
-      print("centroid:")
-      print(centroid)
-      lat <- GBIFdata$decimalLatitude[GBIFdata$country==c]
-      lon <- GBIFdata$decimalLongitude[GBIFdata$country==c]
-      Coord <- data.frame(lon, lat)
-      Coord <- Coord[!is.na(Coord$lat),]
-      Coord <- Coord[!is.na(Coord$lon),]
-      Coord$Dist <- distGeo(Coord[1:nrow(Coord),],centroid)/1000
-      SCoord <- Coord[order(Coord$Dist),]
-      SCoord <- SCoord[SCoord$Dist<100,]
-      # SCoord<-SCoord[SCoord$Dist<100]
-      # print(SCoord)
-      if(!isEmpty(SCoord)){
-        hdf <- get_map(c,zoom=5)
-        Fig <- ggmap(hdf)+geom_point(data=SCoord)
-        # ggsave(Fig,filename=paste(c,".png",sep=""))
-        print(Fig)
-        # dev.off()
-        # if(c=="United States"){ c<- "US"}
-        # if(c=="United Kingdom"){ c<- "Uk"}
-        # CountryMap <- subset(world_map, world_map$region==c)
-        # map('worldHires',c)
-        # points(SCoord$Lon,SCoord$Lat)
+      if(!isEmpty(centroid)){
+
+        print("centroid:")
+        print(centroid)
+        lat <- GBIFdata$decimalLatitude[GBIFdata$country==c]
+        lon <- GBIFdata$decimalLongitude[GBIFdata$country==c]
+        Coord <- data.frame(lon, lat)
+        # Coord <- Coord[!is.na(Coord$lat),]
+        # Coord <- Coord[!is.na(Coord$lon),]
+        Coord$Dist <- distGeo(Coord[1:nrow(Coord),],centroid)/1000
+        SCoord <- Coord[order(Coord$Dist),]
+        SCoord <- SCoord[SCoord$Dist<100,]
+        # SCoord<-SCoord[SCoord$Dist<100]
+        # print(SCoord)
+        if(!isEmpty(SCoord)){
+          if(nrow(SCoord)>5){
+            hdf <- get_map(c,zoom=5)
+            Fig <- ggmap(hdf)+geom_point(data=SCoord)
+            # ggsave(Fig,filename=paste(c,".png",sep=""))
+            print(Fig)
+            # dev.off()
+            # if(c=="United States"){ c<- "US"}
+            # if(c=="United Kingdom"){ c<- "Uk"}
+            # CountryMap <- subset(world_map, world_map$region==c)
+            # map('worldHires',c)
+            # points(SCoord$Lon,SCoord$Lat)
+          }
+        }
       }
     }
   }
